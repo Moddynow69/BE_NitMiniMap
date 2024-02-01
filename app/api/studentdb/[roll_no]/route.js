@@ -5,7 +5,7 @@ export async function GET(request, { params }) {
         const roll_no = params.roll_no;
         await connectToDB();
         const studentRN = await Student.find({ roll_no });
-        return new Response(JSON.stringify(studentRN[0]));
+        return new Response(JSON.stringify(studentRN));
     }
     catch (err) {
         return new Response(JSON.stringify({ error: err.message }));
