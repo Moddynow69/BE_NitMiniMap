@@ -1,13 +1,11 @@
 import { connectToDB } from "@utils/database";
-import Student from "@models/student";
+import Club from "@models/club";
 export async function GET(request, { params }) {
     try {
-        const roll_no = params.roll_no;
         await connectToDB();
-        const studentRN = await Student.find({ roll_no: roll_no});
-        return new Response(JSON.stringify(studentRN));
-    }
-    catch (err) {
+        const clubs = await Club.find({ name: params.nameOrId });
+        return new Response(JSON.stringify(clubs));
+    } catch (err) {
         return new Response(JSON.stringify({ error: err.message }));
     }
 }
@@ -15,31 +13,28 @@ export async function GET(request, { params }) {
 export async function PATCH(request, { params }) {
     try {
         await connectToDB();
-        const { 
+        const {
             name,
             Password,
-            branch ,
-            subsection,
+            meeting,
             roll_no,
-            domain_id,
-         } = await Student.findById(params.roll_no);
-         const { 
+            events
+        } = await Club.findById(params.nameOrId);
+        const {
             nameRJ,
             PasswordRJ,
-            branchRJ,
-            subsectionRJ,
+            meetingRJ,
             roll_noRJ,
-            domain_idRJ
-         } = request.json();
-        const stud = new Student({
-            name:nameRJ??name,
-            Password:PasswordRJ??Password,
-            branch:branchRJ??branch,
-            subsection:subsectionRJ??subsection,
-            roll_no:roll_noRJ??roll_no,
-            domain_id:domain_idRJ??domain_id,
+            eventsRJ
+        } = request.json();
+        const changeClub = new Club({
+            name: nameRJ ?? name,
+            Password: PasswordRJ ?? Password,
+            meeting: meetingRJ ?? meeting,
+            roll_no: roll_noRJ ?? roll_no,
+            events: eventsRJ ?? events
         })
-        const newTable = await stud.save()
+        const newTable = await changeClub.save()
         return new Response(JSON.stringify({ status: true }), { status: 201, headers: { 'Content-Type': 'application/json' } });
     } catch (err) {
         return new Response(JSON.stringify({ error: err.message }));
@@ -49,7 +44,7 @@ export async function PATCH(request, { params }) {
 export async function DELETE(request, { params }) {
     try {
         await connectToDB();
-        const table = await Student.findByIdAndDelete({_id:params.roll_no});
+        const table = await Club.findByIdAndDelete({_id:params.nameOrId});
         return new Response(JSON.stringify({ status: true }));
     } catch (err) {
         return new Response(JSON.stringify({ error: err.message }));
