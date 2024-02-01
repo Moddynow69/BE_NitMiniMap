@@ -11,18 +11,19 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
-    const stud = new Student({
-        name: req.body.name,
-        password: req.body.password,
-        branch: req.body.branch,
-        subsection: req.body.subsection,
-        roll_no: req.body.roll_no,
-        domain_id: req.body.domain_id
-    })
-
     try {
+        await connectToDB();
+        const { name, password, branch, subsection, roll_no, domain_id } = await request.json();
+        const stud = new Student({
+            name: name,
+            password: password,
+            branch: branch,
+            subsection: subsection,
+            roll_no: roll_no,
+            domain_id: domain_id
+        })
         const newStudent = await stud.save()
-        return new Response(json(newStudent)).status(201);
+        return new Response(JSON.stringify({ status: true }), { status: 201, headers: { 'Content-Type': 'application/json' } });
     } catch (err) {
         return new Response(JSON.stringify({ error: err.message }));
     }
